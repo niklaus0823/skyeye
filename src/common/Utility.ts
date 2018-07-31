@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as util from 'util';
 import * as LibFs from 'mz/fs';
+import * as md5 from 'md5';
 import {CACHE_EXPIRE, CACHE_VARIANCE} from './cache/CacheFactory.class';
 
 export interface SettingSchema {
@@ -26,6 +27,18 @@ export namespace CommonTools {
     }
 
     /**
+     * generate token key via md5
+     *
+     * @param {string} key1
+     * @param {string} key2
+     * @param {number} time
+     * @return {string}
+     */
+    export function genToken(key1: string, key2: string, time: number): string {
+        return md5(`${key1},${key2},${time}`).substr(0, 8);
+    }
+
+    /**
      * 获取 IP
      *
      * @param {module:http.ClientRequest} req
@@ -40,20 +53,6 @@ export namespace CommonTools {
             ipAddress = req.socket.remoteAddress;
         }
         return ipAddress;
-    }
-
-    /**
-     * 填充 string
-     *
-     * @param {number} num
-     * @param {number} length
-     * @param {string} context
-     * @return {string}
-     */
-    export function padding(num: number, length: number, context: string = '0') {
-        let numLength = (num.toString()).length;
-        let paddingLen = (length > numLength) ? length - numLength + 1 || 0 : 0;
-        return Array(paddingLen).join(context) + num;
     }
 
     /**
@@ -84,68 +83,6 @@ export namespace CommonTools {
  */
 export namespace MathTools {
     /**
-     * Get Random Element From Array. And if probability is 0, then return this bonus id directly without random logic. <br/>
-     * Probability logic: The percentage probability means is determined by the total sum value.
-     *
-     * <pre>
-     * e.g the total sum value is 10000
-     * bonusId => probability
-     * 10      => 500 5%
-     * 11      => 500 5%
-     * 12      => 500 5%
-     * 13      => 400 4%
-     * 14      => 50 0.5%
-     * 15      => 50 0.5%
-     * 16      => 1500 15%
-     * 17      => 1500 15%
-     * 18      => 5000 50%
-     * </pre>
-     *
-     * @param {Object} probabilityList
-     * <pre>
-     *     [
-     *          [bonusId, probability],
-     *          ...
-     *     ]
-     * </pre>
-     * @return {number}
-     */
-    export function getRandomElementByProbability(probabilityList: Array<[string, number]>): string {
-        let all = 0;
-        let result: string = null;
-        probabilityList.forEach((value) => {
-            let [bonusId, probability] = value;
-            // 配置 probability = 0，则代表必中
-            if (probability == 0) {
-                // result = bonusId;
-                // return;
-            }
-            all += probability;
-        });
-
-        // 为了方便配置，当 probability = 0 时，为 100% 掉落，不在计算全局权重
-        if (result == null) {
-            let seed = getRandomFromRange(1, all);
-            let sum = 0;
-            probabilityList.forEach((value) => {
-                if (result != null) {
-                    return;
-                }
-
-                // get bonus id by probability
-                let [bonusId, probability] = value;
-                sum += probability;
-                if (seed <= sum) {
-                    result = bonusId;
-                    return;
-                }
-            });
-        }
-
-        return result;
-    }
-
-    /**
      * 获取随机数，范围 min <= x <= max
      *
      * @param {number} min
@@ -161,39 +98,6 @@ export namespace MathTools {
         }
 
         return Math.round(Math.random() * (max - min) + min);
-    }
-
-    /**
-     * Calculate whether given percentage rate hit or not.
-     *
-     * @param {number} rate
-     * <pre>
-     * shall be 1-100
-     * if float, it should be 0.xx and will be multiplied by 100 (0.xx * 100 => xx%)
-     * </pre>
-     * @return {boolean} hit
-     */
-    export function calcPercentageRate(rate: number): boolean {
-        // 浮点数处理
-        if (!isNaN(rate) && rate.toString().indexOf('.') != -1) {
-            rate = rate * 100; // convert 0.3 => 30%
-        }
-
-        let hit = false;
-        if (rate <= 0) {
-            // do nothing, $hit already FALSE
-        } else {
-            if (rate >= 100) {
-                hit = true;
-            } else {
-                let randomRate = getRandomFromRange(1, 100);
-                if (randomRate <= rate) {
-                    hit = true;
-                }
-            }
-        }
-
-        return hit;
     }
 
     /**

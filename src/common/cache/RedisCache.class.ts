@@ -901,5 +901,52 @@ export class RedisCache extends AbstractCache {
         return r;
     }
 
+    //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+    //-* List FUNCTIONS
+    //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+    /**
+     * 将一个 value 插入到列表 key 的表尾(最右边)。
+     *
+     * @param {string} key
+     * @param {any} value
+     * @param {number} expire
+     * @return {Promise<number>}
+     */
+    public async rpush(key: string, value: any, expire?: number): Promise<number> {
+        let conn = await this._getConn();
+        let encodeValue = this._encodeValue(value);
+        let r = await CommonTools.promisify(conn.rpush, conn)(key, encodeValue);
+
+        if (expire) {
+            await this.expire(key, expire);
+        }
+
+        return r;
+    }
+
+    /**
+     * 返回列表 key 的长度
+     *
+     * @param {string} key
+     * @param {number} expire
+     * @return {Promise<number>}
+     */
+    public async llen(key: string, expire?: number): Promise<number> {
+        let conn = await this._getConn();
+        return await CommonTools.promisify(conn.llen, conn)(key);
+    }
+
+    /**
+     * 对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，不在指定区间之内的元素都将被删除。
+     *
+     * @param {string} key
+     * @param {number} start
+     * @param {number} end
+     * @return {Promise<number>}
+     */
+    public async ltrim(key: string, start: number, end: number): Promise<number> {
+        let conn = await this._getConn();
+        return await CommonTools.promisify(conn.ltrim, conn)(key);
+    }
     // FIXME 其他接口，等需要时再添加
 }

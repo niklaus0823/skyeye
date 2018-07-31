@@ -3,5 +3,5 @@
   "port": 8080,
   "password": "1q2w3e4r",
   "redis_host": "127.0.0.1",
-  "redis_port": "6379"
+  "redis_port": 6379
 }
