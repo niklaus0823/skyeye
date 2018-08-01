@@ -5,7 +5,7 @@ import * as KoaRouter from 'koa-router';
 import Logger from '../logger/Logger';
 import {CACHE_TYPE_REDIS, CacheFactory} from '../common/cache/CacheFactory.class';
 import AgentManager from '../model/agent/AgentManager';
-import {CommonTools, SettingSchema} from '../common/Utility';
+import {CommonTools, MathTools, SettingSchema} from '../common/Utility';
 import {SYS_PASS, System} from '../common/System';
 import {IRedisConfig} from '../common/cache/RedisCache.class';
 import {CACHE_REGISTER_SECRET_KEY} from '../model/agent/AgentConst';

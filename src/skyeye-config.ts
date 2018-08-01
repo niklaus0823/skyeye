@@ -76,10 +76,10 @@ class CLI {
     private async _save() {
         let setting: SettingSchema = {
             host: this._input.host,
-            port: this._input.port,
+            port: parseInt(this._input.port as any),
             password: this._input.password,
             redis_host: this._input.redis_host,
-            redis_port: this._input.redis_port,
+            redis_port: parseInt(this._input.redis_port as any),
         };
 
         await LibFs.writeFile(settingPath, Buffer.from(JSON.stringify(setting, null, 2)));

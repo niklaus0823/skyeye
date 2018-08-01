@@ -82,10 +82,10 @@ class CLI {
         return __awaiter(this, void 0, void 0, function* () {
             let setting = {
                 host: this._input.host,
-                port: this._input.port,
+                port: parseInt(this._input.port),
                 password: this._input.password,
                 redis_host: this._input.redis_host,
-                redis_port: this._input.redis_port,
+                redis_port: parseInt(this._input.redis_port),
             };
             yield LibFs.writeFile(settingPath, Buffer.from(JSON.stringify(setting, null, 2)));
         });
