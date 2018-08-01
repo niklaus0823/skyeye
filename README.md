@@ -5,7 +5,7 @@ Process monitor for Node.js.
 ## Install
 
 ```bash
-npm install skyeye -g
+npm install skyeye-cli -g
 ```
 
 ## How to use
