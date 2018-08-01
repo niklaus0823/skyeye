@@ -27,7 +27,8 @@ skyeye config
 ```bash
 skyeye start
 
-# Skyeye server start!
+# Start WebSocket Server！PID:719
+# Start Register Server！PID:720
 ```
 
 3. Get the Agent secret key

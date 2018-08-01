@@ -136,9 +136,9 @@ class RegisterServer {
         let secretToken = genToken(this._setting.password, '127.0.0.1', nowTime);
         // server start
         this._server.listen(this._setting.port + 1, this._setting.host, () => {
-            Logger_1.default.instance().info(`Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
+            Logger_1.default.instance().info(`Register Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
+            Logger_1.default.instance().info('Register Server started ...');
             Logger_1.default.instance().info(`Test Link: http://127.0.0.1:${this._setting.port + 1}/127.0.0.1/${nowTime}/${secretToken}`);
-            Logger_1.default.instance().info('Server started ...');
         });
     }
 }

@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const program = require("commander");
-const LibPath = require("path");
-const LibShell = require("shelljs");
+const daemon_server_1 = require("./daemon/daemon-server");
+const daemon_register_1 = require("./daemon/daemon-register");
 const pkg = require('../package.json');
 program.version(pkg.version)
     .parse(process.argv);
@@ -20,13 +20,18 @@ class CLI {
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (LibShell.exec(`nohup node ${LibPath.join(__dirname, '..', 'bin', 'start-server.js')} > /tmp/skyeye-server.log 2>&1 &`).code !== 0) {
-                throw new Error(`err in start server`);
+            try {
+                yield this._start();
             }
-            if (LibShell.exec(`nohup node ${LibPath.join(__dirname, '..', 'bin', 'start-register.js')} > /tmp/skyeye-register.log 2>&1 &`).code !== 0) {
-                throw new Error(`err in start register server`);
+            catch (e) {
+                throw new Error(e);
             }
-            console.log('Skyeye server start!');
+        });
+    }
+    _start() {
+        return __awaiter(this, void 0, void 0, function* () {
+            daemon_server_1.startWebSocketServer();
+            daemon_register_1.startRegisterServer();
         });
     }
 }

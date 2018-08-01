@@ -6,7 +6,6 @@ import {CommonTools, SettingSchema} from './common/Utility';
 
 const pkg = require('../package.json');
 
-
 program.version(pkg.version)
     .parse(process.argv);
 

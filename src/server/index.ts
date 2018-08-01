@@ -56,8 +56,8 @@ class WsServer {
 
         // server start
         this._server.listen(this._setting.port, this._setting.host, () => {
-            Logger.instance().info(`Server is now running at ws://127.0.0.1:${this._setting.port}.`);
-            Logger.instance().info('Server started ...');
+            Logger.instance().info(`WebSocket Server is now running at ws://127.0.0.1:${this._setting.port}.`);
+            Logger.instance().info('WebSocket Server started ...');
         });
     }
 

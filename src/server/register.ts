@@ -147,9 +147,9 @@ class RegisterServer {
 
         // server start
         this._server.listen(this._setting.port + 1, this._setting.host, () => {
-            Logger.instance().info(`Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
+            Logger.instance().info(`Register Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
+            Logger.instance().info('Register Server started ...');
             Logger.instance().info(`Test Link: http://127.0.0.1:${this._setting.port + 1}/127.0.0.1/${nowTime}/${secretToken}`);
-            Logger.instance().info('Server started ...');
         });
     }
 }
