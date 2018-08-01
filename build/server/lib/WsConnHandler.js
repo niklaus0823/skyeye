@@ -32,6 +32,15 @@ var WsConnHandler;
                 // 验证 protocol
                 yield checkProtocol(conn, req, agent);
                 yield agent.connect();
+                // TEST
+                // let message = JSON.stringify([
+                //     [API_TYPE.EXEC_CPU_PROFILER],
+                //     {
+                //         id: agent.id
+                //     }
+                // ]);
+                // const pack = PacketModel.parse(message);
+                // await AgentAction.sendExec(pack, pack.type);
             }
             catch (e) {
                 console.log(e);
@@ -55,12 +64,12 @@ var WsConnHandler;
                     case 100 /* EXEC_SERVER_STAT */:
                     case 200 /* EXEC_CPU_PROFILER */:
                     case 300 /* EXEC_HEAP_SNAPSHOT */:
-                        AgentAction_1.AgentAction.sendExec(pack, pack.type);
+                        yield AgentAction_1.AgentAction.sendExec(pack, pack.type);
                         break;
                     case 101 /* REPORT_SERVER_STAT */:
                     case 201 /* REPORT_CPU_PROFILER */:
                     case 301 /* REPORT_HEAP_SNAPSHOT */:
-                        AgentAction_1.AgentAction.receiveReport(agent, pack, pack.type);
+                        yield AgentAction_1.AgentAction.receiveReport(agent, pack, pack.type);
                         break;
                     default:
                         if (conn.readyState == WebSocket.OPEN) {

@@ -1,5 +1,6 @@
 import * as LibFs from 'mz/fs';
-import * as LibPath from "path";
+import * as LibPath from 'path';
+import * as WebSocket from 'ws';
 import {AgentModel} from '../../model/agent/AgentModel';
 import {PacketModel} from '../../model/packet/PacketModel';
 import AgentManager from '../../model/agent/AgentManager';
@@ -28,7 +29,7 @@ export namespace AgentAction {
      * @param {PacketModel} pack
      * @param {PacketModel} command
      */
-    export function sendExec(pack: PacketModel, command: number = API_TYPE.EXEC_SERVER_STAT) {
+    export async function sendExec(pack: PacketModel, command: number = API_TYPE.EXEC_SERVER_STAT) {
         // 验证 agent 是否存在
         const body: ExecBody = pack.body;
         if (!AgentManager.instance().has(body.id)) {

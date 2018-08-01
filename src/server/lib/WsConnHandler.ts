@@ -1,5 +1,5 @@
-import * as WebSocket from 'ws'
-import * as http from "http";
+import * as WebSocket from 'ws';
+import * as http from 'http';
 import {CacheFactory} from '../../common/cache/CacheFactory.class';
 import {CACHE_REGISTER_SECRET_KEY} from '../../model/agent/AgentConst';
 import {AgentModel} from '../../model/agent/AgentModel';
@@ -24,6 +24,16 @@ export namespace WsConnHandler {
             // 验证 protocol
             await checkProtocol(conn, req, agent);
             await agent.connect();
+
+            // TEST
+            // let message = JSON.stringify([
+            //     [API_TYPE.EXEC_CPU_PROFILER],
+            //     {
+            //         id: agent.id
+            //     }
+            // ]);
+            // const pack = PacketModel.parse(message);
+            // await AgentAction.sendExec(pack, pack.type);
         } catch (e) {
             console.log(e);
             conn.close();
@@ -45,12 +55,12 @@ export namespace WsConnHandler {
                 case API_TYPE.EXEC_SERVER_STAT:
                 case API_TYPE.EXEC_CPU_PROFILER:
                 case API_TYPE.EXEC_HEAP_SNAPSHOT:
-                    AgentAction.sendExec(pack, pack.type);
+                    await AgentAction.sendExec(pack, pack.type);
                     break;
                 case API_TYPE.REPORT_SERVER_STAT:
                 case API_TYPE.REPORT_CPU_PROFILER:
                 case API_TYPE.REPORT_HEAP_SNAPSHOT:
-                    AgentAction.receiveReport(agent, pack, pack.type);
+                    await AgentAction.receiveReport(agent, pack, pack.type);
                     break;
                 default:
                     if (conn.readyState == WebSocket.OPEN) {
@@ -126,6 +136,6 @@ export namespace WsConnHandler {
      * @return {string}
      */
     function getProtocol(conn: WebSocket) {
-        return (conn.protocol.length > 0) ? conn.protocol[0] : null
+        return (conn.protocol.length > 0) ? conn.protocol[0] : null;
     }
 }
