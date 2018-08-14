@@ -2,6 +2,8 @@ Skyeye
 =========================
 Process monitor for Node.js.
 
+# Skyeye-cli
+
 ## Install
 
 ```bash
@@ -43,6 +45,26 @@ curl http://127.0.0.1:8081/127.0.0.1/1533038565835/19561612
 # {"code":0,"token":"bd864703"}
 ```
 
+# Skyeye-agent
 
+## Install
 
-To be continue....
+```bash
+npm install skyeye-agent --save
+```
+
+> Error reporting during installation like：**g++: command not found** ，please install gcc，gcc+，gcc-c++ first
+
+## How to use
+
+```bash
+let agent = require('skyeye-agent');
+let skyeyeHost = '127.0.0.1';
+let skyeyePort = 8080;
+let agentSecret = 'bd864703';
+let agentName = '127.0.0.1:3701';
+let checkInterval = 10000; // 10000ms, check WebSocket heath interval
+let withHeartbeat = false; // Report server status while performing health checks
+agent.start('127.0.0.1', 8080, 'bd864703', agentName, checkInterval, withHeartbeat);
+```
+

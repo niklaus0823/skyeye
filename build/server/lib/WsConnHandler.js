@@ -43,8 +43,7 @@ var WsConnHandler;
                 // await AgentAction.sendExec(pack, pack.type);
             }
             catch (e) {
-                console.log(e);
-                conn.close();
+                conn.close(e);
             }
         });
     }

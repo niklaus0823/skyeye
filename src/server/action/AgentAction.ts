@@ -80,7 +80,7 @@ export namespace AgentAction {
         await cache.rpush(CACHE_SERVER_STAT + agent.id, {
             time: new Date().getTime(),
             data: body
-        });
+        }, 86400); // 一天过期
 
         let dataCount = await cache.llen(CACHE_SERVER_STAT + agent.id);
         if (dataCount > MAX_CACHE_COUNT * 1.5) {
@@ -101,7 +101,7 @@ export namespace AgentAction {
         await cache.rpush(CACHE_CPU_PROFILER + agent.id, {
             time: new Date().getTime(),
             data: body
-        });
+        }, 86400); // 一天过期
 
         let dataCount = await cache.llen(CACHE_CPU_PROFILER + agent.id);
         if (dataCount > MAX_CACHE_COUNT * 1.5) {

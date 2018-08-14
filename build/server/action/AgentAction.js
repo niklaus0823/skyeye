@@ -77,7 +77,7 @@ var AgentAction;
             yield cache.rpush(AgentConst_1.CACHE_SERVER_STAT + agent.id, {
                 time: new Date().getTime(),
                 data: body
-            });
+            }, 86400); // 一天过期
             let dataCount = yield cache.llen(AgentConst_1.CACHE_SERVER_STAT + agent.id);
             if (dataCount > MAX_CACHE_COUNT * 1.5) {
                 yield cache.ltrim(AgentConst_1.CACHE_SERVER_STAT + agent.id, 0, MAX_CACHE_COUNT / 2);
@@ -97,7 +97,7 @@ var AgentAction;
             yield cache.rpush(AgentConst_1.CACHE_CPU_PROFILER + agent.id, {
                 time: new Date().getTime(),
                 data: body
-            });
+            }, 86400); // 一天过期
             let dataCount = yield cache.llen(AgentConst_1.CACHE_CPU_PROFILER + agent.id);
             if (dataCount > MAX_CACHE_COUNT * 1.5) {
                 yield cache.ltrim(AgentConst_1.CACHE_CPU_PROFILER + agent.id, 0, MAX_CACHE_COUNT / 2);

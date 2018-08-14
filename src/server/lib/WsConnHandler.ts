@@ -35,8 +35,7 @@ export namespace WsConnHandler {
             // const pack = PacketModel.parse(message);
             // await AgentAction.sendExec(pack, pack.type);
         } catch (e) {
-            console.log(e);
-            conn.close();
+            conn.close(e);
         }
     }
 
