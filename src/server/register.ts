@@ -91,12 +91,13 @@ class RegisterServer {
                     resolve(ctx);
                 }
 
-                // 生成 token
-                const token = CommonTools.genToken(this._setting.password, ctx.params.ip, TimeTools.getTime());
-
-                // 保存 token
+                // 生成 Token
                 const cache = CacheFactory.instance().getCache();
-                await cache.set(CACHE_REGISTER_TOKEN + ctx.params.ip, token);
+                let token = await cache.get(CACHE_REGISTER_TOKEN + ctx.params.ip);
+                if (token == null) {
+                    token = CommonTools.genToken(this._setting.password, ctx.params.ip, TimeTools.getTime());
+                    await cache.set(CACHE_REGISTER_TOKEN + ctx.params.ip, token);
+                }
 
                 ctx.body = {
                     code: 0,

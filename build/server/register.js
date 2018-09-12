@@ -87,11 +87,13 @@ class RegisterServer {
                     });
                     resolve(ctx);
                 }
-                // 生成 token
-                const token = Utility_1.CommonTools.genToken(this._setting.password, ctx.params.ip, Utility_1.TimeTools.getTime());
-                // 保存 token
+                // 生成 Token
                 const cache = CacheFactory_class_1.CacheFactory.instance().getCache();
-                yield cache.set(AgentManager_1.CACHE_REGISTER_TOKEN + ctx.params.ip, token);
+                let token = yield cache.get(AgentManager_1.CACHE_REGISTER_TOKEN + ctx.params.ip);
+                if (token == null) {
+                    token = Utility_1.CommonTools.genToken(this._setting.password, ctx.params.ip, Utility_1.TimeTools.getTime());
+                    yield cache.set(AgentManager_1.CACHE_REGISTER_TOKEN + ctx.params.ip, token);
+                }
                 ctx.body = {
                     code: 0,
                     token: token,

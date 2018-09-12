@@ -23,6 +23,7 @@ skyeye -h
 #  config [options]  Update skyeye configuration.
 #  start [options]   Start skyeye monitor server and register server.
 #  cmd [options]     Send command to monitor server.
+#  add [options]     Create a secret token.
 #  help [cmd]        display help for [cmd]
 
 ```
@@ -84,6 +85,18 @@ let agentName = '3701'; // port，默认为 PID
 let checkInterval = 10000; // 10000ms, check WebSocket heath interval
 let withHeartbeat = false; // Report server status while performing health checks
 agent.start(skyeyeHost, skyeyePort, agentSecret, agentName, checkInterval, withHeartbeat);
+```
+
+or
+
+```bash
+skyeye add -a 127.0.0.1
+
+#| -------------------- | ---------- 
+#| AGENT_IP             | TOKEN        
+#| -------------------- | ----------
+#| 127.0.0.1_3701       | bd864703    
+#| -------------------- | ----------
 ```
 # Display  Agent State
 
