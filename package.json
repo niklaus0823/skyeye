@@ -1,6 +1,6 @@
 {
   "name": "skyeye-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "fengjie",
   "description": "Process monitor for Node.js.",
   "homepage": "https://github.com/niklaus0823/skyeye#readme",
