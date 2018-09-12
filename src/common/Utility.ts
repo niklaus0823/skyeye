@@ -13,9 +13,127 @@ export interface SettingSchema {
 }
 
 /**
+ * 时间函数工具库
+ */
+export namespace TimeTools {
+
+    export const EMPTY_TIME = '0000-00-00 00:00:00'; // default value in DB
+    export const TIMESTAMP_INIT_TIME = '1970-01-01 00:00:00';
+    export const DEFAULT_EMPTY_TIME = 1514736000;
+
+    // time constants, all in seconds
+    export const MINUTE = 60;
+    export const HOURS4 = 14400;
+    export const HOURS6 = 21600;
+    export const HOURS8 = 28800;
+    export const HOURS12 = 43200;
+    export const HOURS24 = 86400;
+    export const DAY2 = 172800;
+    export const DAY3 = 259200;
+    export const DAY7 = 604800;
+
+    /**
+     * 获取 Date 对象
+     *
+     * @return {Date}
+     */
+    export function getDate(timestamp?: number): Date {
+        if (timestamp === 0) {
+            timestamp = DEFAULT_EMPTY_TIME;
+        }
+
+        if (timestamp) {
+            let millisecond = secondToMilli(timestamp);
+            return new Date(millisecond);
+        }
+
+        return new Date();
+    }
+
+    /**
+     * 获取时间戳
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    export function getTime(timestamp?: number): number {
+        let millisecond = secondToMilli(timestamp);
+        return milliToSecond(getDate(millisecond).getTime());
+    }
+
+    /**
+     * 获取时间的当日 0 点
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    export function getDayTime(timestamp: number): number {
+        let millisecond = secondToMilli(timestamp);
+        let date = getDate(millisecond);
+        date.setHours(0, 0, 0, 0);
+        return milliToSecond(date.getTime());
+    }
+
+    /**
+     * 将毫秒转成秒
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    export function milliToSecond(timestamp: number): number {
+        if (!timestamp) {
+            return timestamp;
+        }
+
+        if (timestamp.toString().length < 13) {
+            timestamp = secondToMilli(timestamp);
+        }
+        return Math.floor(timestamp / 1000);
+    }
+
+    /**
+     * 将毫秒转成秒
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    export function secondToMilli(timestamp: number): number {
+        if (!timestamp) {
+            return timestamp;
+        }
+
+        if (timestamp && timestamp.toString().length > 10) {
+            timestamp = milliToSecond(timestamp);
+        }
+        return Math.floor(timestamp * 1000);
+    }
+}
+
+/**
  * 通用工具库
  */
 export namespace CommonTools {
+
+    /**
+     * 填充 string
+     *
+     * @param {string | number} str
+     * @param {number} length
+     * @param {string} context
+     * @param {boolean} right
+     * @return {string}
+     */
+    export function padding(str: string | number, length: number, context: string = '0', right: boolean = false) {
+        let numLength = (str.toString()).length;
+        let paddingLen = (length > numLength) ? length - numLength + 1 || 0 : 0;
+
+        if (right) {
+            return str + Array(paddingLen).join(context);
+        } else {
+            return Array(paddingLen).join(context) + str;
+        }
+    }
+
     /**
      * Get setting.json object
      *

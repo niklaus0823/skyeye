@@ -15,7 +15,7 @@ class AgentModel {
         this._req = req;
     }
     get id() {
-        return `${this._req.socket.remoteAddress}:${this._req.socket.remotePort}`;
+        return `${this._req.socket.remoteAddress}_${this._req.headers.name}`;
     }
     get name() {
         return `${this._req.headers.name}`;
@@ -31,12 +31,12 @@ class AgentModel {
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield AgentManager_1.default.instance().add(this.id, this);
+            yield AgentManager_1.AgentManager.instance().add(this);
         });
     }
     close() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield AgentManager_1.default.instance().delete(this.id);
+            yield AgentManager_1.AgentManager.instance().delete(this);
         });
     }
 }

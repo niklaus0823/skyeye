@@ -13,9 +13,7 @@ const LibPath = require("path");
 const WebSocket = require("ws");
 const PacketModel_1 = require("../../model/packet/PacketModel");
 const AgentManager_1 = require("../../model/agent/AgentManager");
-const AgentConst_1 = require("../../model/agent/AgentConst");
 const CacheFactory_class_1 = require("../../common/cache/CacheFactory.class");
-const MAX_CACHE_COUNT = 6 * 60 * 24 * 7;
 var AgentAction;
 (function (AgentAction) {
     /**
@@ -27,19 +25,22 @@ var AgentAction;
         return __awaiter(this, void 0, void 0, function* () {
             // 验证 agent 是否存在
             const body = pack.body;
-            if (!AgentManager_1.default.instance().has(body.id)) {
+            if (!AgentManager_1.AgentManager.instance().has(body.id)) {
                 return;
             }
             // 发送执行命令
-            const agent = AgentManager_1.default.instance().get(body.id);
+            const agent = AgentManager_1.AgentManager.instance().get(body.id);
             const conn = agent.conn;
+            if (conn.readyState !== WebSocket.OPEN) {
+                return;
+            }
             switch (command) {
                 case 100 /* EXEC_SERVER_STAT */:
-                case 200 /* EXEC_CPU_PROFILER */:
                 case 300 /* EXEC_HEAP_SNAPSHOT */:
-                    if (conn.readyState == WebSocket.OPEN) {
-                        conn.send(PacketModel_1.PacketModel.create(command, {}).format());
-                    }
+                    conn.send(PacketModel_1.PacketModel.create(command, {}).format());
+                    break;
+                case 200 /* EXEC_CPU_PROFILER */:
+                    conn.send(PacketModel_1.PacketModel.create(command, { timeout: body.timeout }).format());
                     break;
             }
         });
@@ -72,16 +73,8 @@ var AgentAction;
      */
     function saveServerStat(agent, pack) {
         return __awaiter(this, void 0, void 0, function* () {
-            const body = pack.body;
             const cache = CacheFactory_class_1.CacheFactory.instance().getCache();
-            yield cache.rpush(AgentConst_1.CACHE_SERVER_STAT + agent.id, {
-                time: new Date().getTime(),
-                data: body
-            }, 86400); // 一天过期
-            let dataCount = yield cache.llen(AgentConst_1.CACHE_SERVER_STAT + agent.id);
-            if (dataCount > MAX_CACHE_COUNT * 1.5) {
-                yield cache.ltrim(AgentConst_1.CACHE_SERVER_STAT + agent.id, 0, MAX_CACHE_COUNT / 2);
-            }
+            yield cache.hSet(AgentManager_1.CACHE_SERVER_STAT, agent.id, pack.body.res, 86400);
         });
     }
     /**
@@ -92,16 +85,8 @@ var AgentAction;
      */
     function saveCpuProfiler(agent, pack) {
         return __awaiter(this, void 0, void 0, function* () {
-            const body = pack.body;
             const cache = CacheFactory_class_1.CacheFactory.instance().getCache();
-            yield cache.rpush(AgentConst_1.CACHE_CPU_PROFILER + agent.id, {
-                time: new Date().getTime(),
-                data: body
-            }, 86400); // 一天过期
-            let dataCount = yield cache.llen(AgentConst_1.CACHE_CPU_PROFILER + agent.id);
-            if (dataCount > MAX_CACHE_COUNT * 1.5) {
-                yield cache.ltrim(AgentConst_1.CACHE_CPU_PROFILER + agent.id, 0, MAX_CACHE_COUNT / 2);
-            }
+            yield cache.hSet(AgentManager_1.CACHE_CPU_PROFILER, agent.id, pack.body.res, 86400);
         });
     }
     /**
@@ -113,10 +98,9 @@ var AgentAction;
      */
     function saveHeapSnapshot(agent, pack) {
         return __awaiter(this, void 0, void 0, function* () {
-            const body = pack.body;
-            const nowTime = new Date().getTime();
-            const filename = LibPath.join('..', 'dump', `${agent.id}_${nowTime}.heapsnapshot`);
-            yield LibFs.writeFile(filename, JSON.stringify(body.data));
+            console.log(pack.body);
+            const filePath = LibPath.join(__dirname, '..', '..', '..', 'dump', `${agent.id}.heapsnapshot`);
+            yield LibFs.writeFile(filePath, pack.body.res);
         });
     }
 })(AgentAction = exports.AgentAction || (exports.AgentAction = {}));

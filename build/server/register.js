@@ -14,11 +14,8 @@ const Koa = require("koa");
 const KoaRouter = require("koa-router");
 const Logger_1 = require("../logger/Logger");
 const CacheFactory_class_1 = require("../common/cache/CacheFactory.class");
-const AgentManager_1 = require("../model/agent/AgentManager");
 const Utility_1 = require("../common/Utility");
-const System_1 = require("../common/System");
-const AgentConst_1 = require("../model/agent/AgentConst");
-var genToken = Utility_1.CommonTools.genToken;
+const AgentManager_1 = require("../model/agent/AgentManager");
 const debug = require('debug')('app:login');
 class RegisterServer {
     constructor() {
@@ -33,11 +30,9 @@ class RegisterServer {
             debug('[RegisterServer] Initialize server start...');
             // get options
             this._setting = Utility_1.CommonTools.getSetting(LibPath.join(__dirname, '..', '..', 'configs', 'setting.json'));
-            System_1.System.instance().setCache(System_1.SYS_PASS, this._setting.password);
             // plugins init
             let initQueue = [
-                Logger_1.default.instance().init(),
-                AgentManager_1.default.instance().init(),
+                Logger_1.Logger.instance().init(),
                 CacheFactory_class_1.CacheFactory.instance().init(CacheFactory_class_1.CACHE_TYPE_REDIS, [this._getRedisOption()]),
             ];
             yield Promise.all(initQueue);
@@ -74,35 +69,35 @@ class RegisterServer {
         return koa;
     }
     /**
+     * 创建 Kos Router
      *
-     * @return {}
+     * @return {Router}
      * @private
      */
     _createKoaRouter() {
         // create router
         let router = new KoaRouter();
         router.get('/:ip/:timestamp/:loginToken', (ctx) => __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve) => {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 // 验证`登录Token`合法性
-                if (ctx.params.loginToken !== genToken(this._setting.password, ctx.params.ip, ctx.params.timestamp)) {
+                if (ctx.params.loginToken !== Utility_1.CommonTools.genToken(this._setting.password, ctx.params.ip, ctx.params.timestamp)) {
                     ctx.body = JSON.stringify({
                         code: -10001,
                         msg: `Wrong Login Token!...`
                     });
                     resolve(ctx);
                 }
-                // 获取上一次用户的分配
+                // 生成 token
+                const token = Utility_1.CommonTools.genToken(this._setting.password, ctx.params.ip, Utility_1.TimeTools.getTime());
+                // 保存 token
                 const cache = CacheFactory_class_1.CacheFactory.instance().getCache();
-                const nowTime = new Date().getTime();
-                const secretToken = genToken(this._setting.password, ctx.params.ip, nowTime);
-                // 保存 SECRET KEY
-                cache.set(AgentConst_1.CACHE_REGISTER_SECRET_KEY + ctx.params.ip, secretToken);
+                yield cache.set(AgentManager_1.CACHE_REGISTER_TOKEN + ctx.params.ip, token);
                 ctx.body = {
                     code: 0,
-                    token: secretToken,
+                    token: token,
                 };
                 resolve(ctx);
-            });
+            }));
         }));
         return router;
     }
@@ -132,13 +127,13 @@ class RegisterServer {
             return;
         }
         // gen token
-        let nowTime = new Date().getTime();
-        let secretToken = genToken(this._setting.password, '127.0.0.1', nowTime);
+        const time = Utility_1.TimeTools.getTime();
+        const token = Utility_1.CommonTools.genToken(this._setting.password, '127.0.0.1', time);
         // server start
         this._server.listen(this._setting.port + 1, this._setting.host, () => {
-            Logger_1.default.instance().info(`Register Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
-            Logger_1.default.instance().info('Register Server started ...');
-            Logger_1.default.instance().info(`Test Link: http://127.0.0.1:${this._setting.port + 1}/127.0.0.1/${nowTime}/${secretToken}`);
+            Logger_1.Logger.instance().info(`Register Server is now running at http://127.0.0.1:${this._setting.port + 1}.`);
+            Logger_1.Logger.instance().info('Register Server started ...');
+            Logger_1.Logger.instance().info(`Test Link: http://127.0.0.1:${this._setting.port + 1}/127.0.0.1/${time}/${token}`);
         });
     }
 }

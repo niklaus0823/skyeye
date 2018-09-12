@@ -57,7 +57,7 @@ npm install skyeye-agent --save
 
 ## How to use
 
-```bash
+```javascript
 let agent = require('skyeye-agent');
 let skyeyeHost = '127.0.0.1';
 let skyeyePort = 8080;

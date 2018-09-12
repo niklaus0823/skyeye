@@ -37,4 +37,5 @@ class CLI {
 }
 CLI.instance().run().catch((err) => {
     console.log('err: ', err.message);
+    process.exit(-1);
 });

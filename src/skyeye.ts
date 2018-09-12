@@ -5,6 +5,6 @@ const pkg = require('../package.json');
 
 program.version(pkg.version)
     .command('config [options]', 'Update skyeye configuration.')
-    .command('start [options]', 'Start skyeye monitor server and dashboard.')
-    .command('close [options]', 'Close skyeye monitor server and dashboard.')
+    .command('start [options]', 'Start skyeye monitor server and register server.')
+    .command('cmd [options]', 'Send command to monitor server.')
     .parse(process.argv);

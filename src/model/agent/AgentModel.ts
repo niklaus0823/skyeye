@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import * as http from 'http';
-import AgentManager from './AgentManager';
+import {AgentManager} from './AgentManager';
 
 export class AgentModel {
     private readonly _conn: WebSocket;
@@ -12,7 +12,7 @@ export class AgentModel {
     }
 
     public get id() {
-        return `${this._req.socket.remoteAddress}:${this._req.socket.remotePort}`;
+        return `${this._req.socket.remoteAddress}_${this._req.headers.name}`;
     }
 
     public get name() {
@@ -32,10 +32,10 @@ export class AgentModel {
     }
 
     public async connect() {
-        await AgentManager.instance().add(this.id, this);
+        await AgentManager.instance().add(this);
     }
 
     public async close() {
-        await AgentManager.instance().delete(this.id);
+        await AgentManager.instance().delete(this);
     }
 }

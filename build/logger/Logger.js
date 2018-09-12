@@ -62,4 +62,4 @@ class Logger {
         this._logger[level].apply(this._logger, Array.prototype.slice.call(parentArgs));
     }
 }
-exports.default = Logger;
+exports.Logger = Logger;

@@ -5,10 +5,121 @@ const LibFs = require("mz/fs");
 const md5 = require("md5");
 const CacheFactory_class_1 = require("./cache/CacheFactory.class");
 /**
+ * 时间函数工具库
+ */
+var TimeTools;
+(function (TimeTools) {
+    TimeTools.EMPTY_TIME = '0000-00-00 00:00:00'; // default value in DB
+    TimeTools.TIMESTAMP_INIT_TIME = '1970-01-01 00:00:00';
+    TimeTools.DEFAULT_EMPTY_TIME = 1514736000;
+    // time constants, all in seconds
+    TimeTools.MINUTE = 60;
+    TimeTools.HOURS4 = 14400;
+    TimeTools.HOURS6 = 21600;
+    TimeTools.HOURS8 = 28800;
+    TimeTools.HOURS12 = 43200;
+    TimeTools.HOURS24 = 86400;
+    TimeTools.DAY2 = 172800;
+    TimeTools.DAY3 = 259200;
+    TimeTools.DAY7 = 604800;
+    /**
+     * 获取 Date 对象
+     *
+     * @return {Date}
+     */
+    function getDate(timestamp) {
+        if (timestamp === 0) {
+            timestamp = TimeTools.DEFAULT_EMPTY_TIME;
+        }
+        if (timestamp) {
+            let millisecond = secondToMilli(timestamp);
+            return new Date(millisecond);
+        }
+        return new Date();
+    }
+    TimeTools.getDate = getDate;
+    /**
+     * 获取时间戳
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    function getTime(timestamp) {
+        let millisecond = secondToMilli(timestamp);
+        return milliToSecond(getDate(millisecond).getTime());
+    }
+    TimeTools.getTime = getTime;
+    /**
+     * 获取时间的当日 0 点
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    function getDayTime(timestamp) {
+        let millisecond = secondToMilli(timestamp);
+        let date = getDate(millisecond);
+        date.setHours(0, 0, 0, 0);
+        return milliToSecond(date.getTime());
+    }
+    TimeTools.getDayTime = getDayTime;
+    /**
+     * 将毫秒转成秒
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    function milliToSecond(timestamp) {
+        if (!timestamp) {
+            return timestamp;
+        }
+        if (timestamp.toString().length < 13) {
+            timestamp = secondToMilli(timestamp);
+        }
+        return Math.floor(timestamp / 1000);
+    }
+    TimeTools.milliToSecond = milliToSecond;
+    /**
+     * 将毫秒转成秒
+     *
+     * @param {number} timestamp
+     * @return {number}
+     */
+    function secondToMilli(timestamp) {
+        if (!timestamp) {
+            return timestamp;
+        }
+        if (timestamp && timestamp.toString().length > 10) {
+            timestamp = milliToSecond(timestamp);
+        }
+        return Math.floor(timestamp * 1000);
+    }
+    TimeTools.secondToMilli = secondToMilli;
+})(TimeTools = exports.TimeTools || (exports.TimeTools = {}));
+/**
  * 通用工具库
  */
 var CommonTools;
 (function (CommonTools) {
+    /**
+     * 填充 string
+     *
+     * @param {string | number} str
+     * @param {number} length
+     * @param {string} context
+     * @param {boolean} right
+     * @return {string}
+     */
+    function padding(str, length, context = '0', right = false) {
+        let numLength = (str.toString()).length;
+        let paddingLen = (length > numLength) ? length - numLength + 1 || 0 : 0;
+        if (right) {
+            return str + Array(paddingLen).join(context);
+        }
+        else {
+            return Array(paddingLen).join(context) + str;
+        }
+    }
+    CommonTools.padding = padding;
     /**
      * Get setting.json object
      *

@@ -1,27 +1,21 @@
 import * as LibFs from 'mz/fs';
 import * as LibPath from 'path';
 import * as WebSocket from 'ws';
-import {AgentModel} from '../../model/agent/AgentModel';
 import {PacketModel} from '../../model/packet/PacketModel';
-import AgentManager from '../../model/agent/AgentManager';
-import {API_TYPE} from '../const/CommandConst';
-import {CACHE_CPU_PROFILER, CACHE_SERVER_STAT} from '../../model/agent/AgentConst';
+import {AgentModel} from '../../model/agent/AgentModel';
+import {AgentManager, CACHE_CPU_PROFILER, CACHE_SERVER_STAT} from '../../model/agent/AgentManager';
 import {CacheFactory} from '../../common/cache/CacheFactory.class';
+import {API_TYPE} from '../const/CommandConst';
 
-interface ServerStatBody {
+interface ServerStat {
     cpu: number,
     memory: number
 }
 
-interface ReportBody {
-    data: any
-}
-
 interface ExecBody {
-    id: string
+    id: string,
+    timeout?: number,
 }
-
-const MAX_CACHE_COUNT = 6 * 60 * 24 * 7;
 
 export namespace AgentAction {
     /**
@@ -39,13 +33,18 @@ export namespace AgentAction {
         // 发送执行命令
         const agent = AgentManager.instance().get(body.id);
         const conn = agent.conn;
+
+        if (conn.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
         switch (command) {
             case API_TYPE.EXEC_SERVER_STAT:
-            case API_TYPE.EXEC_CPU_PROFILER:
             case API_TYPE.EXEC_HEAP_SNAPSHOT:
-                if (conn.readyState == WebSocket.OPEN) {
-                    conn.send(PacketModel.create(command, {}).format());
-                }
+                conn.send(PacketModel.create(command, {}).format());
+                break;
+            case API_TYPE.EXEC_CPU_PROFILER:
+                conn.send(PacketModel.create(command, {timeout: body.timeout}).format());
                 break;
         }
     }
@@ -74,18 +73,8 @@ export namespace AgentAction {
      * @param {PacketModel} pack
      */
     async function saveServerStat(agent: AgentModel, pack: PacketModel) {
-        const body: ServerStatBody = pack.body;
         const cache = CacheFactory.instance().getCache();
-
-        await cache.rpush(CACHE_SERVER_STAT + agent.id, {
-            time: new Date().getTime(),
-            data: body
-        }, 86400); // 一天过期
-
-        let dataCount = await cache.llen(CACHE_SERVER_STAT + agent.id);
-        if (dataCount > MAX_CACHE_COUNT * 1.5) {
-            await cache.ltrim(CACHE_SERVER_STAT + agent.id, 0, MAX_CACHE_COUNT / 2);
-        }
+        await cache.hSet(CACHE_SERVER_STAT, agent.id, pack.body.res, 86400);
     }
 
     /**
@@ -95,18 +84,8 @@ export namespace AgentAction {
      * @param {PacketModel} pack
      */
     async function saveCpuProfiler(agent: AgentModel, pack: PacketModel) {
-        const body: ReportBody = pack.body;
         const cache = CacheFactory.instance().getCache();
-
-        await cache.rpush(CACHE_CPU_PROFILER + agent.id, {
-            time: new Date().getTime(),
-            data: body
-        }, 86400); // 一天过期
-
-        let dataCount = await cache.llen(CACHE_CPU_PROFILER + agent.id);
-        if (dataCount > MAX_CACHE_COUNT * 1.5) {
-            await cache.ltrim(CACHE_CPU_PROFILER + agent.id, 0, MAX_CACHE_COUNT / 2);
-        }
+        await cache.hSet(CACHE_CPU_PROFILER, agent.id,  pack.body.res, 86400);
     }
 
     /**
@@ -117,9 +96,7 @@ export namespace AgentAction {
      * @return {Promise<void>}
      */
     async function saveHeapSnapshot(agent: AgentModel, pack: PacketModel) {
-        const body: ReportBody = pack.body;
-        const nowTime: number = new Date().getTime();
-        const filename = LibPath.join('..', 'dump', `${agent.id}_${nowTime}.heapsnapshot`);
-        await LibFs.writeFile(filename, JSON.stringify(body.data));
+        const filePath = LibPath.join(__dirname, '..', '..', '..', 'dump', `${agent.id}.heapsnapshot`);
+        await LibFs.writeFile(filePath, pack.body.res);
     }
 }

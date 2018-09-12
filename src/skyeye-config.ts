@@ -54,6 +54,7 @@ prompt.get([
 ], (err, input: SettingSchema) => {
     CLI.instance().run(input).catch((err: Error) => {
         console.log('err: ', err.message);
+        process.exit(-1);
     });
 });
 
@@ -73,6 +74,7 @@ class CLI {
             throw new Error(e);
         }
     }
+
     private async _save() {
         let setting: SettingSchema = {
             host: this._input.host,

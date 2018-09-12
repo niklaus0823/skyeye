@@ -12,7 +12,7 @@ export const enum LoggerLevels {
 /**
  * 日志单例
  */
-export default class Logger {
+export class Logger {
     private static _instance: Logger;
 
     private _initialized: boolean;

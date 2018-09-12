@@ -61,6 +61,7 @@ prompt.get([
 ], (err, input) => {
     CLI.instance().run(input).catch((err) => {
         console.log('err: ', err.message);
+        process.exit(-1);
     });
 });
 class CLI {
