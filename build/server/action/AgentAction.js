@@ -98,7 +98,6 @@ var AgentAction;
      */
     function saveHeapSnapshot(agent, pack) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(pack.body);
             const filePath = LibPath.join(__dirname, '..', '..', '..', 'dump', `${agent.id}.heapsnapshot`);
             yield LibFs.writeFile(filePath, pack.body.res);
         });

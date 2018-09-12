@@ -65,7 +65,7 @@ class CLI {
             // 连接 skyeye server
             let ws = new WebSocket(`ws://127.0.0.1:8080`, this._setting.password);
             ws.on('open', () => {
-                console.log('Command send succeed, Please wait 60 second!');
+                console.log('The command was successfully sent. Please wait for 60 seconds');
                 ws.send(PacketModel_1.PacketModel.create(200 /* EXEC_CPU_PROFILER */, { id: AGENT_ID, timeout: TIMEOUT }).format());
                 this._waitForResponse();
             });
@@ -107,7 +107,6 @@ class CLI {
             let lock = yield cache.get(AgentManager_1.CACHE_AGENT_LOCK + AGENT_ID);
             if (!lock) {
                 const res = yield cache.hGet(AgentManager_1.CACHE_CPU_PROFILER, AGENT_ID);
-                console.log(res);
                 // TOP EXECUTING FUNCTIONS
                 console.log(`| TOP EXECUTING FUNCTIONS`);
                 console.log(`| ${Utility_1.CommonTools.padding('', 20, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 10, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 10, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 30, '-', true)}`);

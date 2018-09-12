@@ -56,7 +56,7 @@ class CLI {
         // 连接 skyeye server
         let ws = new WebSocket(`ws://127.0.0.1:8080`, this._setting.password);
         ws.on('open', () => {
-            console.log('Command send succeed, Please wait 5 second!');
+            console.log('The command was successfully sent. Please wait for 5 seconds');
             ws.send(PacketModel.create(API_TYPE.EXEC_SERVER_STAT, {id: AGENT_ID}).format());
             this._waitForResponse();
         });

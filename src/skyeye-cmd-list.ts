@@ -35,7 +35,6 @@ class CLI {
         console.log(
             `| ${CommonTools.padding('', 20, '-', true)}`,
             `| ${CommonTools.padding('', 10, '-', true)}`,
-            `|`
         );
         console.log(
             `| ${CommonTools.padding('AGENT_ID', 20, ' ', true)}`,

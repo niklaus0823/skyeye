@@ -39,7 +39,7 @@ class CLI {
     }
     _read() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`| ${Utility_1.CommonTools.padding('', 20, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 10, '-', true)}`, `|`);
+            console.log(`| ${Utility_1.CommonTools.padding('', 20, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 10, '-', true)}`);
             console.log(`| ${Utility_1.CommonTools.padding('AGENT_ID', 20, ' ', true)}`, `| ${Utility_1.CommonTools.padding('STATE', 10, ' ', true)}`);
             console.log(`| ${Utility_1.CommonTools.padding('', 20, '-', true)}`, `| ${Utility_1.CommonTools.padding('', 10, '-', true)}`);
             let agentList = yield CacheFactory_class_1.CacheFactory.instance().getCache().hGetAll(AgentManager_1.CACHE_AGENT_LIST);
